@@ -8,6 +8,3 @@ lancerJeu();
 
 // let zoneProposition = document.querySelector(".zoneProposition")
 // console.log(zoneProposition)
-
-// let listeBtnRadio = document.querySelectorAll(".optionSource input")
-// console.log(listeBtnRadio)
