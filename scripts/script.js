@@ -38,20 +38,56 @@ function afficherEmail(nom, email, score) {
   let mailto = `mailto:${email}?subject=Partage du score Azertype&body=Salut, je suis ${nom} et je viens de réaliser le score ${score} sur le site d'Azertype !`;
   location.href = mailto;
 }
-
+/**
+ * Cette fonction prend un nom en paramètre et valide qu'il est au bon format
+ * ici : deux caractères au minimum
+ * @param {string} nom
+ * @throws {Error}
+ */
 function validerNom(nom) {
-  if (nom.length >= 2) {
-    return true;
+  if (nom.length < 2) {
+    throw new Error("Le nom est trop court.");
   }
-  return false;
 }
-
+/**
+ * Cette fonction prend un nom en paramètre et valide qu'il est au bon format
+ * ici : deux caractères au minimum
+ * @param {string} email
+ * @throws {Error}
+ */
 function validerEmail(email) {
   let emailRegExp = new RegExp("[a-z0-9.-_]+@[a-z0-9.-_]+\\.[a-z0-9.-_]+");
-  if (emailRegExp.test(email)) {
-    return true;
+  if (!emailRegExp.test(email)) {
+    throw new Error("L'email n'est pas valide.");
   }
-  return false;
+}
+
+function afficherMessageErreur(message) {
+  let spanErreurMessage = document.getElementById("erreurMessage");
+
+  if (!spanErreurMessage) {
+    let popup = document.querySelector(".popup");
+    spanErreurMessage = document.createElement("span");
+    spanErreurMessage.id = "erreurMessage";
+
+    popup.append(spanErreurMessage);
+  }
+  spanErreurMessage.innerText = message;
+}
+
+function gererFormulaire(scoreEmail) {
+  try {
+    let baliseNom = document.getElementById("nom");
+    let nom = baliseNom.value;
+    validerNom(nom);
+    let baliseMail = document.getElementById("email");
+    let email = baliseMail.value;
+    validerEmail(email);
+    afficherMessageErreur("");
+    afficherEmail(nom, email, scoreEmail);
+  } catch (Error) {
+    afficherMessageErreur(Error.message);
+  }
 }
 
 /**
@@ -102,21 +138,11 @@ function lancerJeu() {
       afficherProposition(listeProposition[i]);
     });
   }
-
   const form = document.querySelector("form");
   form.addEventListener("submit", (event) => {
     event.preventDefault();
-    let baliseNom = document.getElementById("nom");
-    let nom = baliseNom.value;
-    let baliseMail = document.getElementById("email");
-    let email = baliseMail.value;
-
-    if (validerNom(nom) && validerEmail(email)) {
-      let scoreEmail = `${score} / ${i}`;
-      afficherEmail(nom, email, scoreEmail);
-    } else {
-      console.log("erreur");
-    }
+    let scoreEmail = `${score} / ${i}`;
+    gererFormulaire(scoreEmail);
   });
 
   afficherResultat(score, i);
